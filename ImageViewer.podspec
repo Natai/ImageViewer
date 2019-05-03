@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
     s.social_media_url = "https://twitter.com/MailOnline"
     s.source           = { :git => "https://github.com/MailOnline/ImageViewer.git", :tag => s.version.to_s }
 
-    s.ios.deployment_target = "8.0"
+    s.ios.deployment_target = "9.1"
 
     s.source_files  = "ImageViewer/Source/**/*"
 end
