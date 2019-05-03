@@ -24,9 +24,6 @@ public enum GalleryConfigurationItem {
     ///Option to set the Close button type  within the Thumbnails screen.
     case seeAllCloseButtonMode(ButtonMode)
 
-    ///Option to set the Thumbnails button type.
-    case thumbnailsButtonMode(ButtonMode)
-
     ///Option to set the Delete button type.
     case deleteButtonMode(ButtonMode)
 
@@ -69,6 +66,9 @@ public enum GalleryConfigurationItem {
     /// Allows you to select between different types of initial gallery presentation style
     case presentationStyle(GalleryPresentationStyle)
 
+    ///Allows to set minimum magnification factor for the image
+    case minimumZoomScale(CGFloat)
+    
     ///Allows to set maximum magnification factor for the image
     case maximumZoomScale(CGFloat)
 

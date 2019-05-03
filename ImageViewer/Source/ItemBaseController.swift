@@ -40,7 +40,7 @@ open class ItemBaseController<T: UIView>: UIViewController, ItemController, UIGe
     fileprivate var itemFadeDuration: TimeInterval = 0.3
     fileprivate var displacementTimingCurve: UIView.AnimationCurve = .linear
     fileprivate var displacementSpringBounce: CGFloat = 0.7
-    fileprivate let minimumZoomScale: CGFloat = 1
+    fileprivate var minimumZoomScale: CGFloat = 1
     fileprivate var maximumZoomScale: CGFloat = 8
     fileprivate var pagingMode: GalleryPagingMode = .standard
     fileprivate var thresholdVelocity: CGFloat = 500 // The speed of swipe needs to be at least this amount of pixels per second for the swipe to finish dismissal.
@@ -80,6 +80,7 @@ open class ItemBaseController<T: UIView>: UIViewController, ItemController, UIGe
             case .displacementDuration(let duration):               displacementDuration = duration
             case .reverseDisplacementDuration(let duration):        reverseDisplacementDuration = duration
             case .displacementTimingCurve(let curve):               displacementTimingCurve = curve
+            case .minimumZoomScale(let scale):                      minimumZoomScale = min(scale, 1)
             case .maximumZoomScale(let scale):                      maximumZoomScale = scale
             case .itemFadeDuration(let duration):                   itemFadeDuration = duration
             case .displacementKeepOriginalInPlace(let keep):        displacementKeepOriginalInPlace = keep
@@ -132,7 +133,7 @@ open class ItemBaseController<T: UIView>: UIViewController, ItemController, UIGe
         scrollView.contentInset = UIEdgeInsets.zero
         scrollView.contentOffset = CGPoint.zero
         scrollView.minimumZoomScale = minimumZoomScale
-        scrollView.maximumZoomScale = max(maximumZoomScale, aspectFillZoomScale(forBoundingSize: self.view.bounds.size, contentSize: itemView.bounds.size))
+        scrollView.maximumZoomScale = maximumZoomScale
 
         scrollView.delegate = self
 
@@ -194,7 +195,7 @@ open class ItemBaseController<T: UIView>: UIViewController, ItemController, UIGe
 
         fetchImage()
     }
-
+    
     public func fetchImage() {
 
         fetchImageBlock { [weak self] image in
@@ -277,11 +278,10 @@ open class ItemBaseController<T: UIView>: UIViewController, ItemController, UIGe
     @objc func scrollViewDidDoubleTap(_ recognizer: UITapGestureRecognizer) {
 
         let touchPoint = recognizer.location(ofTouch: 0, in: itemView)
-        let aspectFillScale = aspectFillZoomScale(forBoundingSize: scrollView.bounds.size, contentSize: itemView.bounds.size)
 
-        if (scrollView.zoomScale == 1.0 || scrollView.zoomScale > aspectFillScale) {
+        if (scrollView.zoomScale < maximumZoomScale) {
 
-            let zoomRectangle = zoomRect(ForScrollView: scrollView, scale: aspectFillScale, center: touchPoint)
+            let zoomRectangle = zoomRect(ForScrollView: scrollView, scale: maximumZoomScale, center: touchPoint)
 
             UIView.animate(withDuration: doubleTapToZoomDuration, animations: { [weak self] in
 
@@ -297,9 +297,7 @@ open class ItemBaseController<T: UIView>: UIViewController, ItemController, UIGe
     }
 
     @objc func scrollViewDidSwipeToDismiss(_ recognizer: UIPanGestureRecognizer) {
-
-        /// A deliberate UX decision...you have to zoom back in to scale 1 to be able to swipe to dismiss. It is difficult for the user to swipe to dismiss from images larger then screen bounds because almost all the time it's not swiping to dismiss but instead panning a zoomed in picture on the canvas.
-        guard scrollView.zoomScale == scrollView.minimumZoomScale else { return }
+        guard scrollView.zoomScale <= 1 else { return }
 
         let currentVelocity = recognizer.velocity(in: self.view)
         let currentTouchPoint = recognizer.translation(in: view)

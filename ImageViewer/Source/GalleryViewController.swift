@@ -19,7 +19,6 @@ open class GalleryViewController: UIPageViewController, ItemControllerDelegate {
     open var footerView: UIView?
     fileprivate var closeButton: UIButton? = UIButton.closeButton()
     fileprivate var seeAllCloseButton: UIButton? = nil
-    fileprivate var thumbnailsButton: UIButton? = UIButton.thumbnailsButton()
     fileprivate var deleteButton: UIButton? = UIButton.deleteButton()
     fileprivate let scrubber = VideoScrubber()
 
@@ -45,7 +44,6 @@ open class GalleryViewController: UIPageViewController, ItemControllerDelegate {
     fileprivate var footerLayout = FooterLayout.center(25)
     fileprivate var closeLayout = ButtonLayout.pinRight(8, 16)
     fileprivate var seeAllCloseLayout = ButtonLayout.pinRight(8, 16)
-    fileprivate var thumbnailsLayout = ButtonLayout.pinLeft(8, 16)
     fileprivate var deleteLayout = ButtonLayout.pinRight(8, 66)
     fileprivate var statusBarHidden = true
     fileprivate var overlayAccelerationFactor: CGFloat = 1
@@ -87,7 +85,6 @@ open class GalleryViewController: UIPageViewController, ItemControllerDelegate {
             case .footerViewLayout(let layout):                 footerLayout = layout
             case .closeLayout(let layout):                      closeLayout = layout
             case .deleteLayout(let layout):                     deleteLayout = layout
-            case .thumbnailsLayout(let layout):                 thumbnailsLayout = layout
             case .statusBarHidden(let hidden):                  statusBarHidden = hidden
             case .hideDecorationViewsOnLaunch(let hidden):      decorationViewsHidden = hidden
             case .decorationViewsFadeDuration(let duration):    decorationViewsFadeDuration = duration
@@ -123,15 +120,6 @@ open class GalleryViewController: UIPageViewController, ItemControllerDelegate {
 
                 case .none:                 seeAllCloseButton = nil
                 case .custom(let button):   seeAllCloseButton = button
-                case .builtIn:              break
-                }
-
-            case .thumbnailsButtonMode(let buttonMode):
-
-                switch buttonMode {
-
-                case .none:                 thumbnailsButton = nil
-                case .custom(let button):   thumbnailsButton = button
                 case .builtIn:              break
                 }
 
@@ -222,15 +210,6 @@ open class GalleryViewController: UIPageViewController, ItemControllerDelegate {
         }
     }
 
-    fileprivate func configureThumbnailsButton() {
-
-        if let thumbnailsButton = thumbnailsButton {
-            thumbnailsButton.addTarget(self, action: #selector(GalleryViewController.showThumbnails), for: .touchUpInside)
-            thumbnailsButton.alpha = 0
-            self.view.addSubview(thumbnailsButton)
-        }
-    }
-
     fileprivate func configureDeleteButton() {
 
         if let deleteButton = deleteButton {
@@ -258,7 +237,6 @@ open class GalleryViewController: UIPageViewController, ItemControllerDelegate {
         configureHeaderView()
         configureFooterView()
         configureCloseButton()
-        configureThumbnailsButton()
         configureDeleteButton()
         configureScrubber()
 
@@ -319,7 +297,6 @@ open class GalleryViewController: UIPageViewController, ItemControllerDelegate {
         overlayView.frame = view.bounds.insetBy(dx: -UIScreen.main.bounds.width * 2, dy: -UIScreen.main.bounds.height * 2)
 
         layoutButton(closeButton, layout: closeLayout)
-        layoutButton(thumbnailsButton, layout: thumbnailsLayout)
         layoutButton(deleteButton, layout: deleteLayout)
         layoutHeaderView()
         layoutFooterView()
@@ -437,31 +414,6 @@ open class GalleryViewController: UIPageViewController, ItemControllerDelegate {
         }
     }
 
-    //ThumbnailsimageBlock
-
-    @objc fileprivate func showThumbnails() {
-
-        let thumbnailsController = ThumbnailsViewController(itemsDataSource: self.itemsDataSource)
-
-        if let closeButton = seeAllCloseButton {
-            thumbnailsController.closeButton = closeButton
-            thumbnailsController.closeLayout = seeAllCloseLayout
-        } else if let closeButton = closeButton {
-            let seeAllCloseButton = UIButton(frame: CGRect(origin: CGPoint.zero, size: closeButton.bounds.size))
-            seeAllCloseButton.setImage(closeButton.image(for: UIControl.State()), for: UIControl.State())
-            seeAllCloseButton.setImage(closeButton.image(for: .highlighted), for: .highlighted)
-            thumbnailsController.closeButton = seeAllCloseButton
-            thumbnailsController.closeLayout = closeLayout
-        }
-
-        thumbnailsController.onItemSelected = { [weak self] index in
-
-            self?.page(toIndex: index)
-        }
-
-        present(thumbnailsController, animated: true, completion: nil)
-    }
-
     open func page(toIndex index: Int) {
 
         guard currentIndex != index && index >= 0 && index < self.itemsDataSource.itemCount() else { return }
@@ -566,7 +518,6 @@ open class GalleryViewController: UIPageViewController, ItemControllerDelegate {
             self?.headerView?.alpha = 0.0
             self?.footerView?.alpha = 0.0
             self?.closeButton?.alpha = 0.0
-            self?.thumbnailsButton?.alpha = 0.0
             self?.deleteButton?.alpha = 0.0
             self?.scrubber.alpha = 0.0
 
@@ -610,7 +561,6 @@ open class GalleryViewController: UIPageViewController, ItemControllerDelegate {
             self?.headerView?.alpha = targetAlpha
             self?.footerView?.alpha = targetAlpha
             self?.closeButton?.alpha = targetAlpha
-            self?.thumbnailsButton?.alpha = targetAlpha
             self?.deleteButton?.alpha = targetAlpha
 
             if let _ = self?.viewControllers?.first as? VideoViewController {
@@ -693,7 +643,6 @@ open class GalleryViewController: UIPageViewController, ItemControllerDelegate {
             let alpha = 1 - distance * swipeToDismissFadeOutAccelerationFactor
 
             closeButton?.alpha = alpha
-            thumbnailsButton?.alpha = alpha
             deleteButton?.alpha = alpha
             headerView?.alpha = alpha
             footerView?.alpha = alpha

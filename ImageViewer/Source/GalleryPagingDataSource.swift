@@ -84,6 +84,9 @@ final class GalleryPagingDataSource: NSObject, UIPageViewControllerDataSource {
             imageController.displacedViewsDataSource = displacedViewsDataSource
 
             return imageController
+            
+        case .livePhoto(_):
+            return UIViewController()
 
         case .video(let fetchImageBlock, let videoURL):
 
