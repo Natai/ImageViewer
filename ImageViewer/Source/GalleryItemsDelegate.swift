@@ -8,14 +8,8 @@
 
 import Foundation
 
-public protocol GalleryItemsDelegate: class {
+@objc public protocol GalleryItemsDelegate {
 
-    func removeGalleryItem(at index: Int)
-    func mediaSaved(isSuccess: Bool)
-}
-
-extension GalleryItemsDelegate {
-    
-    func removeGalleryItem(at index: Int) { }
-    func mediaSaved(isSuccess: Bool) { }
+    @objc optional func removeGalleryItem(at index: Int)
+    @objc optional func mediaSaved(isSuccess: Bool)
 }

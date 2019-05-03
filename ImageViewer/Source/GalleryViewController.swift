@@ -405,7 +405,7 @@ open class GalleryViewController: UIPageViewController, ItemControllerDelegate {
         deleteButton?.isEnabled = false
         view.isUserInteractionEnabled = false
 
-        itemsDelegate?.removeGalleryItem(at: currentIndex)
+        itemsDelegate?.removeGalleryItem?(at: currentIndex)
         removePage(atIndex: currentIndex) {
 
             [weak self] in
@@ -630,7 +630,7 @@ open class GalleryViewController: UIPageViewController, ItemControllerDelegate {
             let activityVC = UIActivityViewController(activityItems: [image], applicationActivities: nil)
             activityVC.completionWithItemsHandler = { type, isSuccess, items, error in
                 guard type == .saveToCameraRoll else { return }
-                self.itemsDelegate?.mediaSaved(isSuccess: isSuccess)
+                self.itemsDelegate?.mediaSaved?(isSuccess: isSuccess)
             }
             self.present(activityVC, animated: true)
         }
@@ -639,7 +639,7 @@ open class GalleryViewController: UIPageViewController, ItemControllerDelegate {
             let activityVC = UIActivityViewController(activityItems: [videoUrl], applicationActivities: nil)
             activityVC.completionWithItemsHandler = { type, isSuccess, items, error in
                 guard type == .saveToCameraRoll else { return }
-                self.itemsDelegate?.mediaSaved(isSuccess: isSuccess)
+                self.itemsDelegate?.mediaSaved?(isSuccess: isSuccess)
             }
             self.present(activityVC, animated: true)
         }
