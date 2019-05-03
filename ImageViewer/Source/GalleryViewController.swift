@@ -624,7 +624,7 @@ open class GalleryViewController: UIPageViewController, ItemControllerDelegate {
     }
     
     open func showActivityViewController() {
-        let currentController = viewControllers?[currentIndex]
+        guard viewControllers?.count == 1, let currentController = viewControllers?.first else { return }
         if let controller = currentController as? ImageViewController {
             guard let image = controller.itemView.image else { return }
             let activityVC = UIActivityViewController(activityItems: [image], applicationActivities: nil)
