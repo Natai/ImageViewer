@@ -620,19 +620,28 @@ open class GalleryViewController: UIPageViewController, ItemControllerDelegate {
     }
 
     open func itemControllerDidLongPress(_ controller: ItemController, in item: ItemView) {
-        switch (controller, item) {
-
-        case (_ as ImageViewController, let item as UIImageView):
-            guard let image = item.image else { return }
+        showActivityViewController()
+    }
+    
+    open func showActivityViewController() {
+        let currentController = viewControllers?[currentIndex]
+        if let controller = currentController as? ImageViewController {
+            guard let image = controller.itemView.image else { return }
             let activityVC = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+            activityVC.completionWithItemsHandler = { type, isSuccess, items, error in
+                guard type == .saveToCameraRoll else { return }
+                self.itemsDelegate?.mediaSaved(isSuccess: isSuccess)
+            }
             self.present(activityVC, animated: true)
-
-        case (_ as VideoViewController, let item as VideoView):
-            guard let videoUrl = ((item.player?.currentItem?.asset) as? AVURLAsset)?.url else { return }
+        }
+        if let controller = currentController as? VideoViewController {
+            guard let videoUrl = ((controller.itemView.player?.currentItem?.asset) as? AVURLAsset)?.url else { return }
             let activityVC = UIActivityViewController(activityItems: [videoUrl], applicationActivities: nil)
+            activityVC.completionWithItemsHandler = { type, isSuccess, items, error in
+                guard type == .saveToCameraRoll else { return }
+                self.itemsDelegate?.mediaSaved(isSuccess: isSuccess)
+            }
             self.present(activityVC, animated: true)
-
-        default:  return
         }
     }
 

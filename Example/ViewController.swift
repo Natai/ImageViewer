@@ -108,7 +108,7 @@ class ViewController: UIViewController {
 
             GalleryConfigurationItem.swipeToDismissMode(.vertical),
             GalleryConfigurationItem.toggleDecorationViewsBySingleTap(false),
-            GalleryConfigurationItem.activityViewByLongPress(false),
+            GalleryConfigurationItem.activityViewByLongPress(true),
 
             GalleryConfigurationItem.overlayColor(UIColor(white: 0.035, alpha: 1)),
             GalleryConfigurationItem.overlayColorOpacity(1),
@@ -178,6 +178,10 @@ extension ViewController: GalleryItemsDelegate {
         let imageView = items[index].imageView
         imageView.removeFromSuperview()
         items.remove(at: index)
+    }
+    
+    func mediaSaved(isSuccess: Bool) {
+        print(isSuccess)
     }
 }
 
